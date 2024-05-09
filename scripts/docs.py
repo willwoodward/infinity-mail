@@ -29,3 +29,7 @@ for file in files:
         # Change the filename to match the directory
         shutil.copyfile(source + "/main.pdf", path_to_docs + file + ".pdf")
         print(f"Successfully copied {file}.pdf.")
+
+# if __name__ == "__main__":
+#     username, server_name, server_port = sys.argv[1], sys.argv[2], int(sys.argv[3])
+#     start_client(username, server_name, server_port)

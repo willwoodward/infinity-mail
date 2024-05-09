@@ -1,0 +1,34 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\subsection{Full-Stack App Design}
+\subsubsection{Frontend Framework}
+I chose to use React, as I am already familiar with this framework, and it is relatively industry-standard. I want to develop my skills further, and hope that this project will be a good way to do so. Ideally, since React has a large community, people will be able to contribute further / notice bugs more commonly.
+
+\subsubsection{Backend Framework}
+Initially, I chose to use NodeJS for the backend. However, as this project became larger, it became a lot less easy to manage. I chose to switch to using ASP.NET in C\#, as this had strong types, better performance, better integration with IMAP and POP, and was something completely new to me.
+
+\subsection{AI Integration Design}
+In line with the initial functional requirements, I want to employ models to serve the following functions:
+\begin{enumerate}
+    \item Email autocomplete based on email writing style and conversation history
+    \item Previous conversation summary and suggested points to mention
+    \item AI spam filtering to suggest emails that might have been moved to spam
+\end{enumerate}
+In line with these requirements, since there is going to be a heavy use of LLMs, I will be using foundation models discussed in the next section to achieve the first two functions. I will create my own spam detection model to meet the third requirement.
+
+\subsubsection{Foundation Models}
+Since many LLMs are currently being developed, I want to ensure that this project is fairly agnostic. I will be using Mixtral, as this is a free LLM, and will choose to interact via API, as this seems to be the standard for most models. This leaves room to upgrade to better models in the future, such as GPT-4. I am aware of GPTs, however I want to develop the integration with these models myself, partly for experience and partly to ensure that the project is LLM agnostic.
+
+\subsubsection{Knowledge Base}
+To fine tune the foundation model, I will need to create a knowledge base. This will have to store conversation history, and a representation of email writing style. For now, this will probably involve storing each sent email in a database, however in future it would make sense to condense this.
+\\\\
+Two potential options for knowledge bases are graph databases and vector databases.
+
+\subsubsection{Spam Detection AI}
+
+\subsubsection{AI Inference}
+
+
+\end{document}
