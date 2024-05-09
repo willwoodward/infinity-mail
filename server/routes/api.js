@@ -22,7 +22,7 @@ router.get('/emails', async (req, res) => {
             host: IMAPHost,
             port: 993,
             secure: true,
-            logger: false,
+            logger: true,
             auth: {
                 user: req.session.email,
                 accessToken: req.session.accessToken
@@ -36,7 +36,8 @@ router.get('/emails', async (req, res) => {
         try {
             await client.fetchOne(client.mailbox.exists, { source: true });
             for await (let message of client.fetch('1:10', { envelope: true, source: true, bodyStructure: true, headers: true })) {
-                let sliced_source = message.source.toString()
+                let sliced_source = message.source.toString();
+                console.log(sliced_source);
                 // Sometimes AMP emails don't load https://amp.dev/documentation/guides-and-tutorials/learn/email_fundamentals
 
                 // Find the body part with plain text
