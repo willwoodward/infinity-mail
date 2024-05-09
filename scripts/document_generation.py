@@ -18,7 +18,8 @@ for file in files:
         file_exists = os.path.exists(source + "/main.tex")
         
         if file_exists:
-            subprocess.call(f"pdflatex {source}/main.tex", shell=True)
+            subprocess.call(f"cd {source}/ && pdflatex main.tex", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            shutil.copyfile(source + "/main.pdf", path_to_docs + file + ".pdf")
             print(f"Compiled latex file and copied contents into {file}.pdf")
         else:
             print(f"main.tex not found in {file} folder.")
@@ -26,5 +27,5 @@ for file in files:
     else:
         # Move main.pdf to documentation
         # Change the filename to match the directory
-        destination = shutil.copyfile(source + "/main.pdf", path_to_docs + file + ".pdf")
+        shutil.copyfile(source + "/main.pdf", path_to_docs + file + ".pdf")
         print(f"Successfully copied {file}.pdf.")
