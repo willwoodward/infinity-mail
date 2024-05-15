@@ -16,7 +16,7 @@ function Sidebar({ toggle, select, isOpen }) {
                     </div>
                 </div>
                 <div className={isOpen ? "absolute inset-y-0 translate-x-[15vw] my-[43vh] transition-all duration-1000" : "absolute inset-y-0 translate-x-[-30px] my-[43vh] transition-all duration-1000"}>
-                    <button className="flex items-center justify-center h-14 w-14 rounded-full transition-all bg-zinc-200 hover:bg-zinc-700 hover:outline-none hover:ring-offset-8" onClick={() => toggle()}>
+                    <button className="flex items-center justify-center h-14 w-14 rounded-full transition-all bg-zinc-600 hover:bg-zinc-500 hover:outline-none hover:ring-offset-8" onClick={() => toggle()}>
                         <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke={isOpen ? "currentColor" : "none"}>
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
                         </svg>
