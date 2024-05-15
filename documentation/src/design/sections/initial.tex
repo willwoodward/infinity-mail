@@ -24,11 +24,18 @@ Since many LLMs are currently being developed, I want to ensure that this projec
 \subsubsection{Knowledge Base}
 To fine tune the foundation model, I will need to create a knowledge base. This will have to store conversation history, and a representation of email writing style. For now, this will probably involve storing each sent email in a database, however in future it would make sense to condense this.
 \\\\
-Two potential options for knowledge bases are graph databases and vector databases.
+Two potential options for knowledge bases are graph databases and vector databases. I will use a vector database as this seems to be the industry standard for encoding large amounts of information, but I will leave graph databases open for further investigation.
+\\\\
+Conversation history needs to be quickly swapped, depending on the email thread. The vector database should be in the backend, as there needs to be a lot of data processing to get it into the correct format. To do this with minimal delay, when opening an email thread, an API request should be sent, letting the vector database load pre-processed documents in and out of the vector database.
 
 \subsubsection{Spam Detection AI}
 
 \subsubsection{AI Inference}
+An API request will be sent to a Python API server, containing the spam dection model binaries, whilst interaction with the foundation models and knowledge bases will also be done on this server, using LangChain. At least in the initial design phase, it makes sense organisationally to include all AI related endpoints on the same server. I anticipate as the system design progresses and response times become more demanding, this underlying design might change. The client should be able to interact with both the AI server and Backend Web server, to anticipate the use of in-memory database caching such as redis in future.
+
+\subsection{Testing Environment}
+
+\subsection{CI/CD}
 
 
 \end{document}

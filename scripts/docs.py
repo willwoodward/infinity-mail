@@ -43,7 +43,6 @@ if __name__ == "__main__":
     
     else:
         option = sys.argv[1]
-        print(option)
         
         if option == "-r":
             print("Recompiling...")
