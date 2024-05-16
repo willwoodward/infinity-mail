@@ -1,6 +1,5 @@
 from langchain_chroma import Chroma
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import CharacterTextSplitter
 from langchain.schema.document import Document
 
@@ -11,7 +10,7 @@ class VectorStore:
         # Initialise embedding function
         embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         
-        self.__db = Chroma(embedding_function=embedding_function)
+        self.__db = Chroma(persist_directory="./chroma_db", embedding_function=embedding_function)
         self.retriever = self.__db.as_retriever()
 
     def add(self, docs):
@@ -25,6 +24,13 @@ class VectorStore:
         
         # Store the raw documents in the vector store
         self.add(documents)
+        return
+    
+    def switch(self, docs):
+        # Clear the vector store and add the new documents
+        self.__db.delete(ids=[id for id in self.__db.get()['ids']])
+
+        self.add_raw(docs)
         return
 
 store = VectorStore()

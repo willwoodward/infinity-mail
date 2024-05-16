@@ -18,6 +18,12 @@ def update_db():
     db.add_raw(data['document'])
     return "Document added to database."
 
+@app.route('/ai/switch', methods = ['POST'])
+def switch_db():
+    data = request.json
+    db.switch(data['document'])
+    return "Document added to database, and other items removed."
+
 @app.route("/ai/query")
 def query_db():
     query = request.args.get('query')
