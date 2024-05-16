@@ -1,33 +1,25 @@
 from langchain_community.llms import HuggingFaceEndpoint
 import os
+from langchain_chroma import Chroma
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_community.embeddings.sentence_transformer import (
+    SentenceTransformerEmbeddings,
+)
+from vector_store import VectorStore
 
+print("Imported")
 HF_API_TOKEN = os.environ["HF_API_TOKEN"]
 
-from langchain_community.document_loaders import TextLoader
-from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import CharacterTextSplitter
-from langchain_chroma import Chroma
-
-# Load the document, split it into chunks, embed each chunk and load it into the vector store.
-raw_documents = TextLoader('./example_email.txt').load()
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-documents = text_splitter.split_documents(raw_documents)
-
-from langchain.vectorstores import Chroma
-
-vectorstore = Chroma.from_documents(documents=documents, embedding=OpenAIEmbeddings())
-
+db = VectorStore()
+db.add_raw('./example_email.txt')
+retriever=db.retriever
 
 llm = HuggingFaceEndpoint(repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
                     temperature=0.1, 
                     model_kwargs={"max_length": 100},
                     huggingfacehub_api_token=HF_API_TOKEN)
-
-retriever=vectorstore.as_retriever()
-
-from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.prompts import ChatPromptTemplate
 
 system_prompt = (
     "Use the given context to answer the question. "

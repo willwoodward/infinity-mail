@@ -17,7 +17,7 @@ function MailPanel({ isOpen, select }) {
     return (
         <>
             { isOpen ?
-                <div className="flex flex-col absolute h-[96vh] w-[17vw] bg-zinc-800 translate-x-[17vw] border-r-2 border-zinc-700 transition-all duration-1000 overflow-y-scroll">
+                <div className="hide-scroll flex flex-col absolute h-[96vh] w-[17vw] bg-zinc-800 translate-x-[17vw] border-r-2 border-zinc-700 transition-all duration-1000 overflow-y-scroll">
                     {mails.map((mail) => (
                         <MailInfoBlock className="h-32" sender={mail.sender} subject={mail.subject} date={(new Date(mail.date)).toUTCString()} body={mail.body} select = { select } />
                     ))}

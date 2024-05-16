@@ -20,6 +20,6 @@ Best regards,
 
 [Your Name]
 [Your Position/Title]
-XYZ Solutions
+XYZ Solutions=
 Email: [Your Email Address]
 Phone: [Your Phone Number]
