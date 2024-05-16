@@ -47,7 +47,7 @@ function App() {
         <>
           <Navbar />
           <Sidebar toggle={toggle} select={selectMail} isOpen={isOpen} />
-          <AIPanel />
+          <AIPanel mailContent={mailContent}/>
           <MainPage isOpen={isOpen} mailContent={mailContent} />
         </>
         :

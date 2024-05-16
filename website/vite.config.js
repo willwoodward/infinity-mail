@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': 'http://localhost:8090',
-      '/auth': 'http://localhost:8090'
+      '/auth': 'http://localhost:8090',
+      '/ai': 'http://localhost:5000'
     }
   }
 })
