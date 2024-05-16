@@ -2,6 +2,7 @@ from langchain_chroma import Chroma
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import CharacterTextSplitter
+from langchain.schema.document import Document
 
 class VectorStore:
     def __init__(self):
@@ -19,9 +20,8 @@ class VectorStore:
         return
     
     def add_raw(self, raw_docs):
-        raw_documents = TextLoader(raw_docs).load()
         text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        documents = text_splitter.split_documents(raw_documents)
+        documents = [Document(page_content=x) for x in text_splitter.split_text(raw_docs)]
         
         # Store the raw documents in the vector store
         self.add(documents)
