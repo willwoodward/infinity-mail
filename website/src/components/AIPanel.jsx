@@ -4,7 +4,7 @@ function AIPanel({ mailContent }) {
     const [summary, setSummary] = useState("Pending...");
 
     function post_email() {
-        fetch('/ai/switch', {
+        fetch('http://localhost:81/ai/switch', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({document: JSON.stringify(mailContent)})
@@ -15,7 +15,7 @@ function AIPanel({ mailContent }) {
     function get_summary() {
         console.log("Fetching summary");
         (async () => {
-            const res = await fetch(`/ai/query?query="Summarise the email passed as context in 3 concise bullet points."`);
+            const res = await fetch(`http://localhost:81/ai/query?query="Summarise the email passed as context in 3 concise bullet points."`);
             const response = await res.text();
             setSummary(response);
         })();

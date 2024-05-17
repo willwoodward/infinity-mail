@@ -1,11 +1,27 @@
 services:
-  server:
+  ai-server:
     build:
       context: ./ai_server
     ports:
       - 5000:5000
     env_file:
       - ./ai_server/.env
+    networks:
+      - internal
+  api-server:
+    build:
+      context: ./old_server
+    ports:
+      - 8090:8090
+    networks:
+      - internal
+  client:
+    build:
+      context: ./website
+    environment:
+      NODE_ENV: production
+    ports:
+      - 5173:5173
     networks:
       - internal
   proxy:
@@ -17,7 +33,9 @@ services:
     networks:
       - internal
     depends_on:
-      - server
+      - ai-server
+      - api-server
+      - client
 
 networks:
   internal:

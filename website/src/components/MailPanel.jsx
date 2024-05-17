@@ -7,7 +7,7 @@ function MailPanel({ isOpen, select }) {
     // Load emails
     useEffect(() => {
         (async () => {
-            const res = await fetch("/api/emails");
+            const res = await fetch("http://localhost:81/api/emails");
             const response = await res.json();
             setMails(response);
         })();

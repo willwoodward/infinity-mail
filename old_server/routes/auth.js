@@ -14,7 +14,7 @@ router.get('/google', async (req, res) => {
             client_secret: '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',
             code,
             grant_type: 'authorization_code',
-            redirect_uri: 'http://localhost:5173/auth/google'
+            redirect_uri: 'http://localhost:81/auth/google'
         })
 
         const response = await fetch('https://oauth2.googleapis.com/token', {

@@ -98,7 +98,7 @@ router.get('/login', (req, res) => {
         scope: 'https://mail.google.com/ email',
         include_granted_scopes: true,
         response_type: 'code',
-        redirect_uri: 'http://localhost:5173/auth/google',
+        redirect_uri: 'http://localhost:81/auth/google',
         access_type: 'offline',
         client_id: '1022259876690-r9qd5va4upo28bacop20h86n29k6rhca.apps.googleusercontent.com'
     });
