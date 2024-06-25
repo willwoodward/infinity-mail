@@ -1,28 +1,38 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-.AddCookie()
-.AddGoogle(googleOptions =>
-    {
-        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-        googleOptions.CallbackPath = "/account/hello";
-    });
 
 builder.Services.AddControllers();
 
+// builder.Services.AddAuthentication (options => {
+//     // This forces challenge results to be handled by Google OpenID Handler, so there's no
+//     // need to add an AccountController that emits challenges for Login.
+//     options.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    
+//     // This forces forbid results to be handled by Google OpenID Handler, which checks if
+//     // extra scopes are required and does automatic incremental auth.
+//     options.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    
+//     // Default scheme that will handle everything else.
+//     // Once a user is authenticated, the OAuth2 token info is stored in cookies.
+//     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+// })
+// .AddCookie (options => {
+//     options.ExpireTimeSpan = TimeSpan.FromMinutes (5);
+// })
+// .AddGoogleOpenIdConnect (options => {
+//     var secrets = GoogleClientSecrets.FromFile ("client_secret.json").Secrets;
+//     options.ClientId = secrets.ClientId;
+//     options.ClientSecret = secrets.ClientSecret;
+// });
+
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseHttpsRedirection ();
+app.UseStaticFiles ();
+	
+app.UseRouting ();
+
+app.UseAuthentication ();
+app.UseAuthorization ();
 
 app.MapControllers();
 

@@ -95,7 +95,7 @@ router.get('/emails', async (req, res) => {
 router.get('/login', (req, res) => {
     // Generate Google OAuth link
     const authURL = new URLSearchParams({
-        scope: 'https://mail.google.com/ email',
+        scope: 'https://mail.google.com/email',
         include_granted_scopes: true,
         response_type: 'code',
         redirect_uri: 'http://localhost:81/auth/google',
