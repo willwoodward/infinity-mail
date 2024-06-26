@@ -6,7 +6,12 @@ using Newtonsoft.Json;
 [Route("/api/auth")]
 public class AuthController: ControllerBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor context;
+
+    public AuthController(IHttpContextAccessor context)
+    {
+        this.context = context;
+    }
 
     [HttpGet("login")]
     public object login() 
@@ -19,14 +24,14 @@ public class AuthController: ControllerBase
         param.Add("response_type", "code");
         param.Add("redirect_uri", "http://localhost:5108/api/auth/google");
         param.Add("access_type", "offline");
-        param.Add("client_id", _configuration["GoogleAuth:client_id"]);
+        param.Add("client_id", "1022259876690-r9qd5va4upo28bacop20h86n29k6rhca.apps.googleusercontent.com");
 
         string uri = QueryHelpers.AddQueryString(url, param);
         return Redirect(uri);
     }
 
     [HttpGet("google")]
-    public async Task<string> google(string code) 
+    public async Task google(string code) 
     {
         // Get authorization code
         // Do error handling
@@ -35,8 +40,8 @@ public class AuthController: ControllerBase
         string url = "https://oauth2.googleapis.com/token";
         Dictionary<string, string> param = new Dictionary<string, string>();
         param.Add("redirect_uri", "http://localhost:5108/api/auth/google");
-        param.Add("client_id", _configuration["GoogleAuth:client_id"]);
-        param.Add("client_secret", _configuration["GoogleAuth:client_secret"]);
+        param.Add("client_id", "1022259876690-r9qd5va4upo28bacop20h86n29k6rhca.apps.googleusercontent.com");
+        param.Add("client_secret", "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");
         param.Add("code", code);
         param.Add("grant_type", "authorization_code");
 
@@ -46,6 +51,8 @@ public class AuthController: ControllerBase
         dynamic json  = JsonConvert.DeserializeObject(data);
         data = json.access_token;
 
-        return data;
+        this.context.HttpContext.Session.SetString("access_token", data);
+
+        return;
     }
 }
