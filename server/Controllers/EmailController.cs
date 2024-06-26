@@ -19,43 +19,37 @@ using Google.Apis.Auth.OAuth2.Web;
 [Route("/api/account")]
 public class EmailController : ControllerBase
 {
-    [HttpGet("login")]
-    public string readEmailsAsync()
+    private readonly IHttpContextAccessor context;
+
+    public EmailController(IHttpContextAccessor context)
     {
-        using (var client = new ImapClient (new ProtocolLogger ("imap.log"))) {
-            client.Connect ("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
+        this.context = context;
+    }
 
-            client.Authenticate ("willwoodward100", "ILoveP3nny!");
-        }
-        return "Done";
-        // const string GMailAccount = "willwoodward100@gmail.com";
+    [HttpGet("login")]
+    public async Task<string> readEmailsAsync()
+    {
+        var oauth2 = new SaslMechanismOAuth2 ("will.woodward100", this.context.HttpContext.Session.GetString("access_token"));
+    
+        using (var emailClient = new ImapClient ()) 
+        {
+            await emailClient.ConnectAsync ("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
+            await emailClient.AuthenticateAsync (oauth2);
 
-        // var clientSecrets = new ClientSecrets {
-        //     ClientId = "1022259876690-r9qd5va4upo28bacop20h86n29k6rhca.apps.googleusercontent.com",
-        //     ClientSecret = "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"
-        // };
+            var inbox = emailClient.Inbox;
+            inbox.Open (FolderAccess.ReadOnly);
 
-        // var codeFlow = new GoogleAuthorizationCodeFlow (new GoogleAuthorizationCodeFlow.Initializer {
-        //     DataStore = new FileDataStore ("CredentialCacheFolder", false),
-        //     Scopes = new [] { "https://mail.google.com/" },
-        //     ClientSecrets = clientSecrets
-        // });
+            Console.WriteLine ("Total messages: {0}", inbox.Count);
+            Console.WriteLine ("Recent messages: {0}", inbox.Recent);
 
-        // // Note: For a web app, you'll want to use AuthorizationCodeWebApp instead.
-        // var codeReceiver = new LocalServerCodeReceiver ();
-        // var authCode = new AuthorizationCodeWebApp(codeFlow, "http://localhost:5108/api/account/login", "http://localhost:5108/api/account/login");
+            for (int i = 0; i < inbox.Count; i++) {
+                var message = inbox.GetMessage (i);
+                Console.WriteLine ("Subject: {0}", message.Subject);
+            }
 
-        // var credential = await authCode.AuthorizeAsync (GMailAccount, CancellationToken.None);
+            await emailClient.DisconnectAsync (true);
+        };
 
-        // if (credential.token.IsExpired (SystemClock.Default))
-        //     await credential.RefreshTokenAsync (CancellationToken.None);
-
-        // var oauth2 = new SaslMechanismOAuth2 (credential.UserId, credential.Token.AccessToken);
-
-        // using (var client = new ImapClient ()) {
-        //     await client.ConnectAsync ("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
-        //     await client.AuthenticateAsync (oauth2);
-        //     await client.DisconnectAsync (true);
-        // }
+        return "Success";
     }
 }
