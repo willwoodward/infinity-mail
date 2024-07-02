@@ -16,7 +16,7 @@ using MailKit.Security;
 using Google.Apis.Auth.OAuth2.Web;
 
 [ApiController]
-[Route("/api/account")]
+[Route("/api/email")]
 public class EmailController : ControllerBase
 {
     private readonly IHttpContextAccessor context;
@@ -26,7 +26,7 @@ public class EmailController : ControllerBase
         this.context = context;
     }
 
-    [HttpGet("login")]
+    [HttpGet("emails")]
     public async Task<string> readEmailsAsync()
     {
         var oauth2 = new SaslMechanismOAuth2 ("will.woodward100", this.context.HttpContext.Session.GetString("access_token"));
@@ -42,9 +42,9 @@ public class EmailController : ControllerBase
             Console.WriteLine ("Total messages: {0}", inbox.Count);
             Console.WriteLine ("Recent messages: {0}", inbox.Recent);
 
-            for (int i = 0; i < inbox.Count; i++) {
+            for (int i = inbox.Count - 1; i > inbox.Count - 11; i--) {
                 var message = inbox.GetMessage (i);
-                Console.WriteLine ("Subject: {0}", message.Subject);
+                Console.WriteLine ("Subject: {0}", message.Date);
             }
 
             await emailClient.DisconnectAsync (true);
