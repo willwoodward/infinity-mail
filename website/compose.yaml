@@ -11,10 +11,13 @@ services:
   server:
     build:
       context: .
+      dockerfile: dev.Dockerfile
     environment:
-      NODE_ENV: production
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - 5173:5173
+    volumes:
+      - ./src:/usr/src/app/src
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
