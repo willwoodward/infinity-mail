@@ -2,28 +2,40 @@ services:
   ai-server:
     build:
       context: ./ai_server
+      dockerfile: dev.Dockerfile
     ports:
       - 5000:5000
+    volumes:
+      - ./ai_server:/app
     env_file:
       - ./ai_server/.env
     networks:
       - internal
+
   api-server:
     build:
-      context: ./old_server
+      context: ./server
+      dockerfile: dev.Dockerfile
     ports:
       - 8090:8090
+    volumes:
+      - ./server:/source
     networks:
       - internal
+
   client:
     build:
       context: ./website
+      dockerfile: dev.Dockerfile
     environment:
-      NODE_ENV: production
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - 5173:5173
+    volumes:
+      - ./website/src:/usr/src/app/src
     networks:
       - internal
+
   proxy:
     build:
       context: ./proxy
