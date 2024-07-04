@@ -8,13 +8,7 @@ services:
       - ./ai_server/.env
     networks:
       - internal
-  old-api-server:
-    build:
-      context: ./old_server
-    ports:
-      - 8090:8090
-    networks:
-      - internal
+
   api-server:
     build:
       context: ./server
@@ -24,6 +18,7 @@ services:
       - ./server/.env
     networks:
       - internal
+
   client:
     build:
       context: ./website
@@ -33,6 +28,7 @@ services:
       - 5173:5173
     networks:
       - internal
+
   proxy:
     build:
       context: ./proxy
@@ -43,7 +39,6 @@ services:
       - internal
     depends_on:
       - ai-server
-      - old-api-server
       - api-server
       - client
 
