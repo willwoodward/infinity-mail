@@ -18,7 +18,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch('http://localhost:81/auth/verify');
+      const response = await fetch('http://localhost:81/api/auth/verify');
       setLoginState(response.status === 200);
     })();
   }, [])

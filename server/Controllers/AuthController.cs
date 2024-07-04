@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -23,7 +24,7 @@ public class AuthController: ControllerBase
         param.Add("scope", "https://mail.google.com/");
         param.Add("include_granted_scopes", "true");
         param.Add("response_type", "code");
-        param.Add("redirect_uri", "http://localhost:5108/api/auth/google");
+        param.Add("redirect_uri", "http://localhost:81/api/auth/google");
         param.Add("access_type", "offline");
         param.Add("client_id", "1022259876690-r9qd5va4upo28bacop20h86n29k6rhca.apps.googleusercontent.com");
 
@@ -40,7 +41,7 @@ public class AuthController: ControllerBase
         // Get authorization token
         string url = "https://oauth2.googleapis.com/token";
         Dictionary<string, string> param = new Dictionary<string, string>();
-        param.Add("redirect_uri", "http://localhost:5108/api/auth/google");
+        param.Add("redirect_uri", "http://localhost:81/api/auth/google");
         param.Add("client_id", "1022259876690-r9qd5va4upo28bacop20h86n29k6rhca.apps.googleusercontent.com");
         param.Add("client_secret", "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");
         param.Add("code", code);
@@ -54,6 +55,20 @@ public class AuthController: ControllerBase
 
         this.context.HttpContext.Session.SetString("access_token", data);
 
+        Response.Redirect("http://localhost:81");
+    }
+
+    [HttpGet("verify")]
+    public void verify()
+    {
+        string token = this.context.HttpContext.Session.GetString("access_token");
+        if (token != null)
+        {
+            Response.StatusCode = 200;
+            return;
+        }
+
+        Response.StatusCode = 401;
         return;
     }
 }
