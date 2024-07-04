@@ -11,13 +11,18 @@ services:
       - ./ai_server/.env
     networks:
       - internal
-  # api-server:
-  #   build:
-  #     context: ./server
-  #   ports:
-  #     - 8090:8090
-  #   networks:
-  #     - internal
+
+  api-server:
+    build:
+      context: ./server
+      dockerfile: dev.Dockerfile
+    ports:
+      - 8090:8090
+    volumes:
+      - ./server:/source
+    networks:
+      - internal
+
   client:
     build:
       context: ./website
@@ -40,8 +45,8 @@ services:
     networks:
       - internal
     depends_on:
-      # - ai-server
-      # - api-server
+      - ai-server
+      - api-server
       - client
 
 networks:
