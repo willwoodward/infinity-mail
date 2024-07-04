@@ -1,13 +1,16 @@
 services:
-  # ai-server:
-  #   build:
-  #     context: ./ai_server
-  #   ports:
-  #     - 5000:5000
-  #   env_file:
-  #     - ./ai_server/.env
-  #   networks:
-  #     - internal
+  ai-server:
+    build:
+      context: ./ai_server
+      dockerfile: dev.Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+      - ./ai_server:/app
+    env_file:
+      - ./ai_server/.env
+    networks:
+      - internal
   # api-server:
   #   build:
   #     context: ./server
@@ -27,6 +30,7 @@ services:
       - ./website/src:/usr/src/app/src
     networks:
       - internal
+
   proxy:
     build:
       context: ./proxy
