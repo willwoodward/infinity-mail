@@ -54,14 +54,6 @@ public class EmailController : ControllerBase
             Console.WriteLine ("Total messages: {0}", inbox.Count);
             Console.WriteLine ("Recent messages: {0}", inbox.Recent);
 
-            // foreach (var summary in inbox.Fetch (0, -1, MessageSummaryItems.UniqueId | MessageSummaryItems.BodyStructure)) {
-            //     if (summary.HtmlBody != null) {
-            //         // this will download *just* the text/html part
-            //         var html = inbox.GetBodyPart(summary.UniqueId, summary.HtmlBody);
-            //         Console.WriteLine(html);
-            //     }
-            // }
-
             for (int i = inbox.Count - 1; i > inbox.Count - 11; i--) {
                 var message = inbox.GetMessage(i);
                 Email email = new Email();
@@ -78,5 +70,43 @@ public class EmailController : ControllerBase
         };
 
         return jsonString;
+    }
+
+    [HttpGet("folders")]
+    public async Task getFolders()
+    {
+        string token = this.context.HttpContext.Session.GetString("access_token");
+        if (token == null)
+        {
+            Response.Redirect("http://localhost:81/api/auth/login");
+        }
+
+        var oauth2 = new SaslMechanismOAuth2("will.woodward100", token);
+        string jsonString;
+    
+        using (var emailClient = new ImapClient()) 
+        {
+            await emailClient.ConnectAsync("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
+            await emailClient.AuthenticateAsync(oauth2);
+
+            var inbox = emailClient.Inbox;
+            inbox.Open (FolderAccess.ReadOnly);
+
+            // Get the first personal namespace and list the toplevel folders under it.
+            var personal = emailClient.GetFolder(emailClient.PersonalNamespaces[0]);
+
+            foreach (var folder in personal.GetSubfolders(false))
+            {
+                Console.WriteLine ("[folder] {0}", folder.Name);
+                if (folder.Name == "[Gmail]")
+                {
+                    foreach (var subfolder in folder.GetSubfolders(false)) {
+                        Console.WriteLine ("[folder] {0}", subfolder.Name);
+                    }
+                }
+            }
+
+            await emailClient.DisconnectAsync (true);
+        };
     }
 }
