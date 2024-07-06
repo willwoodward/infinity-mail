@@ -3,14 +3,6 @@ import { useState } from "react";
 function AIPanel({ mailContent }) {
     const [summary, setSummary] = useState("Pending...");
 
-    function post_email() {
-        fetch('http://localhost:81/ai/switch', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({document: JSON.stringify(mailContent)})
-        })
-    }
-
     // Load emails
     function get_summary() {
         console.log("Fetching summary");
@@ -32,7 +24,7 @@ function AIPanel({ mailContent }) {
                 <div className="flex flex-col flex-grow">
                     <div className="px-4 pt-4">
                         <div className="text-base text-zinc-200 font-semibold">Context</div>
-                        <div className="bg-zinc-800 rounded-lg mt-2" onClick={() => post_email()}>
+                        <div className="bg-zinc-800 rounded-lg mt-2">
                             <div className="text-zinc-500 px-1">Upload Context</div>
                         </div>
                     </div>

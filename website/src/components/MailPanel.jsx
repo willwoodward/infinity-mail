@@ -8,6 +8,9 @@ function MailPanel({ isOpen, select, folder }) {
     // Load emails
     useEffect(() => {
         (async () => {
+            // Verify
+            await fetch('http://localhost:81/api/auth/verify');
+
             const res = await fetch("http://localhost:81/api/email/emails?" + new URLSearchParams({folder, index}).toString());
             const response = await res.json();
 
