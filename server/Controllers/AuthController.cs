@@ -50,25 +50,62 @@ public class AuthController: ControllerBase
         var httpClient = new HttpClient();
         HttpResponseMessage response = await httpClient.PostAsync(url, new FormUrlEncodedContent(param));
         string data = await response.Content.ReadAsStringAsync();
-        dynamic json  = JsonConvert.DeserializeObject(data);
-        data = json.access_token;
+        dynamic json = JsonConvert.DeserializeObject(data);
+        string access_token = json.access_token;
+        string refresh_token = json.refresh_token;
+        int expires_in = json.expires_in;
 
-        this.context.HttpContext.Session.SetString("access_token", data);
+        string expiry_date = DateTime.UtcNow.AddSeconds(expires_in).ToString();
+
+        this.context.HttpContext.Session.SetString("access_token", access_token);
+        this.context.HttpContext.Session.SetString("refresh_token", refresh_token);
+        this.context.HttpContext.Session.SetString("expiry_date", expiry_date);
 
         Response.Redirect("http://localhost:81");
     }
 
     [HttpGet("verify")]
-    public void verify()
+    public async void verify()
     {
-        string token = this.context.HttpContext.Session.GetString("access_token");
-        if (token != null)
+        string accessToken = this.context.HttpContext.Session.GetString("access_token");
+        string refreshToken = this.context.HttpContext.Session.GetString("refresh_token");
+        DateTime expiryDate = Convert.ToDateTime(this.context.HttpContext.Session.GetString("expiry_date"));
+
+        if (accessToken == null || refreshToken == null)
         {
-            Response.StatusCode = 200;
+            Response.StatusCode = 401;
             return;
         }
 
-        Response.StatusCode = 401;
+        // Refresh access token
+        if (DateTime.UtcNow > expiryDate)
+        {
+            string url = "https://oauth2.googleapis.com/token";
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("client_id", "1022259876690-r9qd5va4upo28bacop20h86n29k6rhca.apps.googleusercontent.com");
+            param.Add("client_secret", "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");
+            param.Add("token", refreshToken);
+            param.Add("grant_type", "refresh_token");
+
+            var httpClient = new HttpClient();
+            HttpResponseMessage response = await httpClient.PostAsync(url, new FormUrlEncodedContent(param));
+            string data = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(data);
+            string access_token = json.access_token;
+            int expires_in = json.expires_in;
+
+            string expiry_date = DateTime.UtcNow.AddSeconds(expires_in).ToString();
+
+            this.context.HttpContext.Session.SetString("access_token", access_token);
+            this.context.HttpContext.Session.SetString("expiry_date", expiry_date);
+            Console.WriteLine("Refresh token used to obtain new access token");
+            Response.StatusCode = 200;
+            return;
+        }
+        
+        // Else, correctly verified
+        Console.WriteLine("Verified");
+        Response.StatusCode = 200;
         return;
     }
 }

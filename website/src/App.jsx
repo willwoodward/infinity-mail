@@ -28,14 +28,14 @@ function App() {
   }
 
   function selectMail(sender, subject, date, body) {
-    setMailContent(
-      {
-        sender: sender,
-        subject: subject,
-        date: date,
-        body: body
-      }
-    )
+    setMailContent({sender, subject, date, body})
+
+    // Upload Context
+    fetch('http://localhost:81/ai/switch', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({document: JSON.stringify({sender, subject, date, body})})
+    })
   }
 
   // Returns the blank page when loading
