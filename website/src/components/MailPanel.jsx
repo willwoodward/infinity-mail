@@ -3,15 +3,21 @@ import MailInfoBlock from "./MailInfoBlock";
 
 function MailPanel({ isOpen, select, folder }) {
     const [mails, setMails] = useState([]);
+    const [index, setIndex] = useState(0);
 
     // Load emails
     useEffect(() => {
         (async () => {
-            const res = await fetch("http://localhost:81/api/email/emails?" + new URLSearchParams({folder}).toString());
+            const res = await fetch("http://localhost:81/api/email/emails?" + new URLSearchParams({folder, index}).toString());
             const response = await res.json();
-            setMails(response);
+
+            if (index > 0) {
+                setMails(mails.concat(response));
+            } else {
+                setMails(response);
+            }
         })();
-    }, [folder])
+    }, [folder, index])
 
     // Returns the list of emails in the mail panel, I have limited this to 10 for now before I implement pagination
     return (
@@ -21,10 +27,12 @@ function MailPanel({ isOpen, select, folder }) {
                     {mails.map((mail) => (
                         <MailInfoBlock className="h-32" sender={mail.sender} subject={mail.subject} date={(new Date(mail.date)).toUTCString()} body={mail.body} select = { select } />
                     ))}
+                    <div className="cursor-pointer" onClick={() => setIndex(index + 1)}>
+                        <p>Click to view more.</p>
+                    </div>
                 </div>
             :
-                <div className="flex flex-col absolute h-[96vh] w-0 bg-zinc-800 transition-all duration-1000">
-                </div>
+                <div className="flex flex-col absolute h-[96vh] w-0 bg-zinc-800 transition-all duration-1000"></div>
             }
         </>
     );
