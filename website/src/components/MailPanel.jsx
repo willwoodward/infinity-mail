@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import MailInfoBlock from "./MailInfoBlock";
 
-function MailPanel({ isOpen, select }) {
+function MailPanel({ isOpen, select, folder }) {
     const [mails, setMails] = useState([]);
 
     // Load emails
     useEffect(() => {
         (async () => {
-            const res = await fetch("http://localhost:81/api/email/emails");
+            const res = await fetch("http://localhost:81/api/email/emails?" + new URLSearchParams({folder}).toString());
             const response = await res.json();
             setMails(response);
         })();
-    }, [])
+    }, [folder])
 
     // Returns the list of emails in the mail panel, I have limited this to 10 for now before I implement pagination
     return (

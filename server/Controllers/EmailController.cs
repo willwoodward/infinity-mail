@@ -29,7 +29,7 @@ public class EmailController : ControllerBase
     }
 
     [HttpGet("emails")]
-    public async Task<string> readEmailsAsync()
+    public async Task<string> readEmailsAsync(string folder)
     {
         string token = this.context.HttpContext.Session.GetString("access_token");
         if (token == null)
@@ -46,15 +46,15 @@ public class EmailController : ControllerBase
             await emailClient.ConnectAsync("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
             await emailClient.AuthenticateAsync(oauth2);
 
-            var inbox = emailClient.Inbox;
-            inbox.Open (FolderAccess.ReadOnly);
+            var inbox = emailClient.GetFolder(folder);
+            inbox.Open(FolderAccess.ReadOnly);
 
             List<Email> emailList = new List<Email>();
 
             Console.WriteLine ("Total messages: {0}", inbox.Count);
             Console.WriteLine ("Recent messages: {0}", inbox.Recent);
 
-            for (int i = inbox.Count - 1; i > inbox.Count - 11; i--) {
+            for (int i = inbox.Count - 1; i >= 0; i--) {
                 var message = inbox.GetMessage(i);
                 Email email = new Email();
                 email.sender = message.From.ToString();
@@ -100,7 +100,7 @@ public class EmailController : ControllerBase
                 if (folder.Name == "[Gmail]")
                 {
                     foreach (var subfolder in folder.GetSubfolders(false)) {
-                        jsonString.Add(subfolder.Name);
+                        jsonString.Add("[Gmail]/" + subfolder.Name);
                     }
                 } else
                 {

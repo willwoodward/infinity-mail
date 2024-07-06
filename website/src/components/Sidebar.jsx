@@ -3,6 +3,7 @@ import MailPanel from "./MailPanel";
 
 function Sidebar({ toggle, select, isOpen }) {
     const [folders, setFolders] = useState([]);
+    const [selectedFolder, setSelectedFolder] = useState('INBOX');
 
     useEffect(() => {
     (async () => {
@@ -12,6 +13,10 @@ function Sidebar({ toggle, select, isOpen }) {
     })();
     }, [])
 
+    function selectFolder(folder) {
+        console.log(folder);
+        setSelectedFolder(folder);
+    }
 
     // This is for the leftmost sidebar, containing the inboxes and also the button to toggle the sidebar opening
     return (
@@ -25,7 +30,7 @@ function Sidebar({ toggle, select, isOpen }) {
                 <div className="flex flex-col flex-grow">
                     <div className="flex flex-col mt-4">
                         {folders.map((folder) => (
-                            <h1 className="text-l pl-4 font-bold text-white transition-all cursor-pointer">{isOpen ? folder : ''}</h1>
+                            <h1 className="text-l pl-4 font-bold text-white transition-all cursor-pointer" onClick={() => selectFolder(folder)}>{isOpen ? folder : ''}</h1>
                         ))}
                     </div>
                 </div>
@@ -37,7 +42,7 @@ function Sidebar({ toggle, select, isOpen }) {
                     </button>
                 </div>
             </div>
-            <MailPanel isOpen={isOpen} select = { select } />
+            <MailPanel isOpen={isOpen} select = {select} folder={selectedFolder} />
         </>
     );
 }
