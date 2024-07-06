@@ -73,7 +73,7 @@ public class EmailController : ControllerBase
     }
 
     [HttpGet("folders")]
-    public async Task getFolders()
+    public async Task<string> getFolders()
     {
         string token = this.context.HttpContext.Session.GetString("access_token");
         if (token == null)
@@ -82,7 +82,7 @@ public class EmailController : ControllerBase
         }
 
         var oauth2 = new SaslMechanismOAuth2("will.woodward100", token);
-        string jsonString;
+        List<string> jsonString = new List<string>();
     
         using (var emailClient = new ImapClient()) 
         {
@@ -97,16 +97,21 @@ public class EmailController : ControllerBase
 
             foreach (var folder in personal.GetSubfolders(false))
             {
-                Console.WriteLine ("[folder] {0}", folder.Name);
                 if (folder.Name == "[Gmail]")
                 {
                     foreach (var subfolder in folder.GetSubfolders(false)) {
-                        Console.WriteLine ("[folder] {0}", subfolder.Name);
+                        jsonString.Add(subfolder.Name);
                     }
+                } else
+                {
+                    jsonString.Add(folder.Name);
                 }
             }
 
             await emailClient.DisconnectAsync (true);
         };
+
+        string resp = JsonSerializer.Serialize(jsonString);
+        return resp;
     }
 }

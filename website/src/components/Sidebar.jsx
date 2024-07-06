@@ -1,6 +1,18 @@
+import { useState, useEffect } from 'react'
 import MailPanel from "./MailPanel";
 
 function Sidebar({ toggle, select, isOpen }) {
+    const [folders, setFolders] = useState([]);
+
+    useEffect(() => {
+    (async () => {
+        const res = await fetch('http://localhost:81/api/email/folders');
+        const response = await res.json();
+        setFolders(response);
+    })();
+    }, [])
+
+
     // This is for the leftmost sidebar, containing the inboxes and also the button to toggle the sidebar opening
     return (
         <>
@@ -11,8 +23,10 @@ function Sidebar({ toggle, select, isOpen }) {
                     </div>
                 </div>
                 <div className="flex flex-col flex-grow">
-                    <div className="flex">
-                        <h1 className="text-l pl-4 font-bold text-white mt-4 transition-all">{isOpen ? 'Inbox' : ''}</h1>
+                    <div className="flex flex-col mt-4">
+                        {folders.map((folder) => (
+                            <h1 className="text-l pl-4 font-bold text-white transition-all cursor-pointer">{isOpen ? folder : ''}</h1>
+                        ))}
                     </div>
                 </div>
                 <div className={isOpen ? "absolute inset-y-0 translate-x-[15vw] my-[43vh] transition-all duration-1000" : "absolute inset-y-0 translate-x-[-30px] my-[43vh] transition-all duration-1000"}>
