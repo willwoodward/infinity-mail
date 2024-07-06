@@ -29,7 +29,7 @@ public class EmailController : ControllerBase
     }
 
     [HttpGet("emails")]
-    public async Task<string> readEmailsAsync(string folder)
+    public async Task<string> readEmailsAsync(string folder, int index)
     {
         string token = this.context.HttpContext.Session.GetString("access_token");
         if (token == null)
@@ -37,6 +37,8 @@ public class EmailController : ControllerBase
             Response.Redirect("http://localhost:81/api/auth/login");
             return "Failure";
         }
+
+        int pageSize = 10;
 
         var oauth2 = new SaslMechanismOAuth2("will.woodward100", token);
         string jsonString;
@@ -53,8 +55,12 @@ public class EmailController : ControllerBase
 
             Console.WriteLine ("Total messages: {0}", inbox.Count);
             Console.WriteLine ("Recent messages: {0}", inbox.Recent);
+            int lastIndex = inbox.Count - 1;
 
-            for (int i = inbox.Count - 1; i >= 0; i--) {
+            int lowerIndex = lastIndex - ((index * pageSize) + pageSize - 1);
+            if (lowerIndex < 0) lowerIndex = 0;
+
+            for (int i = lastIndex - (index * pageSize); i >= lowerIndex; i--) {
                 var message = inbox.GetMessage(i);
                 Email email = new Email();
                 email.sender = message.From.ToString();
