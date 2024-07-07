@@ -13,7 +13,8 @@ function App() {
     sender: "",
     subject: "",
     date: "",
-    body: ""
+    body: "",
+    id: ""
   });
 
   useEffect(() => {
@@ -27,8 +28,8 @@ function App() {
     setIsOpen(!isOpen);
   }
 
-  function selectMail(sender, subject, date, body) {
-    setMailContent({sender, subject, date, body})
+  function selectMail(sender, subject, date, body, id) {
+    setMailContent({sender, subject, date, body, id})
 
     // Upload Context
     fetch('http://localhost:81/ai/switch', {

@@ -4,6 +4,7 @@ import MailPanel from "./MailPanel";
 function Sidebar({ toggle, select, isOpen }) {
     const [folders, setFolders] = useState([]);
     const [selectedFolder, setSelectedFolder] = useState('INBOX');
+    const [index, setIndex] = useState(0);
 
     useEffect(() => {
     (async () => {
@@ -14,8 +15,12 @@ function Sidebar({ toggle, select, isOpen }) {
     }, [])
 
     function selectFolder(folder) {
-        console.log(folder);
+        setIndex(0);
         setSelectedFolder(folder);
+    }
+
+    function incrementIndex() {
+        setIndex(index + 1);
     }
 
     // This is for the leftmost sidebar, containing the inboxes and also the button to toggle the sidebar opening
@@ -42,7 +47,7 @@ function Sidebar({ toggle, select, isOpen }) {
                     </button>
                 </div>
             </div>
-            <MailPanel isOpen={isOpen} select = {select} folder={selectedFolder} />
+            <MailPanel isOpen={isOpen} select = {select} folder={selectedFolder} index={index} inc={incrementIndex}/>
         </>
     );
 }

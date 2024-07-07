@@ -16,6 +16,7 @@ using MailKit.Security;
 using Google.Apis.Auth.OAuth2.Web;
 using server;
 using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 
 [ApiController]
 [Route("/api/email")]
@@ -51,32 +52,31 @@ public class EmailController : ControllerBase
             var inbox = emailClient.GetFolder(folder);
             inbox.Open(FolderAccess.ReadOnly);
 
-            List<Email> emailList = new List<Email>();
+            List<EmailPreview> emailList = new List<EmailPreview>();
 
             Console.WriteLine ("Total messages: {0}", inbox.Count);
             Console.WriteLine ("Recent messages: {0}", inbox.Recent);
             int lastIndex = inbox.Count - 1;
 
+            // There is a bug where if it is pressed on the last row, it will return the last email
             int lowerIndex = lastIndex - ((index * pageSize) + pageSize - 1);
             if (lowerIndex < 0) lowerIndex = 0;
 
-            for (int i = lastIndex - (index * pageSize); i >= lowerIndex; i--) {
-                var message = inbox.GetMessage(i);
-                Email email = new Email();
-                email.sender = message.From.ToString();
-                email.subject = message.Subject;
-                email.body = message.HtmlBody;
-                email.date = message.Date.ToString();
-                emailList.Add(email);
+            int upperIndex = lastIndex - (index * pageSize);
+            if (upperIndex < 0) upperIndex = 0;
+
+            // Getting the mail summary
+            foreach (var summary in (await inbox.FetchAsync(lowerIndex, upperIndex, MessageSummaryItems.UniqueId | MessageSummaryItems.Envelope)).Reverse())
+            {
+                EmailPreview envelope = new EmailPreview();
+                envelope.sender = summary.Envelope.From.ToString();
+                envelope.subject = summary.Envelope.Subject;
+                envelope.date = summary.Date.ToString();
+                envelope.id = summary.UniqueId.ToString();
+                emailList.Add(envelope);
             }
 
             jsonString = JsonSerializer.Serialize(emailList);
-
-            // Getting the mail summary
-            foreach (var summary in (await inbox.FetchAsync(lowerIndex, lastIndex - (index * pageSize), MessageSummaryItems.Envelope)).Reverse())
-            {
-                Console.WriteLine(summary.Date.ToString());
-            }
 
             await emailClient.DisconnectAsync (true);
         };

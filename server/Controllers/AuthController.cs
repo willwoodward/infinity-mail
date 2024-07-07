@@ -20,7 +20,7 @@ public class AuthController: ControllerBase
     {
         // Construct Google API endpoint with mail permissions
         string url = "https://accounts.google.com/o/oauth2/v2/auth";
-        Dictionary<string, string> param = new Dictionary<string, string>();
+        Dictionary<string, string?> param = new Dictionary<string, string?>();
         param.Add("scope", "https://mail.google.com/");
         param.Add("include_granted_scopes", "true");
         param.Add("response_type", "code");
