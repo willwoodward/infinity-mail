@@ -72,6 +72,12 @@ public class EmailController : ControllerBase
 
             jsonString = JsonSerializer.Serialize(emailList);
 
+            // Getting the mail summary
+            foreach (var summary in (await inbox.FetchAsync(lowerIndex, lastIndex - (index * pageSize), MessageSummaryItems.Envelope)).Reverse())
+            {
+                Console.WriteLine(summary.Date.ToString());
+            }
+
             await emailClient.DisconnectAsync (true);
         };
 
@@ -119,5 +125,43 @@ public class EmailController : ControllerBase
 
         string resp = JsonSerializer.Serialize(jsonString);
         return resp;
+    }
+
+    [HttpGet("email")]
+    public async Task<string> getEmail(int emailID)
+    {
+        string token = this.context.HttpContext.Session.GetString("access_token");
+        if (token == null)
+        {
+            Response.Redirect("http://localhost:81/api/auth/login");
+            return "Failure";
+        }
+
+        int pageSize = 10;
+
+        var oauth2 = new SaslMechanismOAuth2("will.woodward100", token);
+        string jsonString;
+    
+        using (var emailClient = new ImapClient()) 
+        {
+            await emailClient.ConnectAsync("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
+            await emailClient.AuthenticateAsync(oauth2);
+
+            var inbox = emailClient.GetFolder("INBOX");
+            inbox.Open(FolderAccess.ReadOnly);
+
+            var message = inbox.GetMessage(emailID);
+            Email email = new Email();
+            email.sender = message.From.ToString();
+            email.subject = message.Subject;
+            email.body = message.HtmlBody;
+            email.date = message.Date.ToString();
+
+            jsonString = JsonSerializer.Serialize(email);
+
+            await emailClient.DisconnectAsync(true);
+        };
+
+        return jsonString;
     }
 }
