@@ -28,14 +28,19 @@ function App() {
     setIsOpen(!isOpen);
   }
 
-  function selectMail(sender, subject, date, body, id) {
-    setMailContent({sender, subject, date, body, id})
+  async function selectMail(folder, id) {
+    // Get the message body
+    const res = await fetch("http://localhost:81/api/email/email?" + new URLSearchParams({folder, emailID: id}).toString());
+    const response = await res.json();
+
+    setMailContent({sender: response.sender, subject: response.subject, date: response.date, body: response.body});
+    console.log("Pressed");
 
     // Upload Context
-    fetch('http://localhost:81/ai/switch', {
+    await fetch('http://localhost:81/ai/switch', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({document: JSON.stringify({sender, subject, date, body})})
+      body: JSON.stringify({document: JSON.stringify({sender, subject, date, body: response})})
     })
   }
 

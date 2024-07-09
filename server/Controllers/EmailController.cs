@@ -128,7 +128,7 @@ public class EmailController : ControllerBase
     }
 
     [HttpGet("email")]
-    public async Task<string> getEmail(int emailID)
+    public async Task<string> getEmail(string folder, int emailID)
     {
         string token = this.context.HttpContext.Session.GetString("access_token");
         if (token == null)
@@ -147,10 +147,10 @@ public class EmailController : ControllerBase
             await emailClient.ConnectAsync("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
             await emailClient.AuthenticateAsync(oauth2);
 
-            var inbox = emailClient.GetFolder("INBOX");
+            var inbox = emailClient.GetFolder(folder);
             inbox.Open(FolderAccess.ReadOnly);
 
-            var message = inbox.GetMessage(emailID);
+            var message = inbox.GetMessage(emailID - 1);
             Email email = new Email();
             email.sender = message.From.ToString();
             email.subject = message.Subject;
