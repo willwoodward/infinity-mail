@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function AIPanel({ mailContent }) {
-    const [summary, setSummary] = useState("Pending...");
+    const [summary, setSummary] = useState("");
 
     // Load emails
     function get_summary() {
@@ -31,9 +31,9 @@ function AIPanel({ mailContent }) {
                     <div className="px-4 pt-4">
                         <div className="text-base text-zinc-200 font-semibold">History Summary</div>
                         <div className="bg-zinc-800 rounded-lg mt-2">
-                            <div className="text-zinc-500 px-1">{summary}</div>
+                            <div className={`px-1 ${summary ? "text-zinc-200" : "text-zinc-500"}`}>{summary ? summary : "Pending..."}</div>
                         </div>
-                        <button onClick={() => get_summary()}>
+                        <button onClick={() => get_summary()} className="bg-white bg-opacity-10 py-1 px-2 my-4 rounded-lg hover:bg-opacity-20 transition-all">
                             Generate Summary
                         </button>
                     </div>
