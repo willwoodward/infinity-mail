@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react'
 import MailPanel from "./MailPanel";
 
 function Sidebar({ toggle, select, isOpen }) {
-    const [folders, setFolders] = useState([]);
+    const [folders, setFolders] = useState([{}]);
     const [selectedFolder, setSelectedFolder] = useState('INBOX');
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
-    (async () => {
-        const res = await fetch('http://localhost:81/api/email/folders');
-        const response = await res.json();
-        setFolders(response);
-    })();
+        (async () => {
+            const res = await fetch('http://localhost:81/api/email/folders');
+            const response = await res.json();
+
+            // Map over folders client-side, separating concerns
+            setFolders(response.map((folder) => {
+                return {name: folderName(folder), folder}
+            }));
+        })();
     }, [])
 
     function selectFolder(folder) {
@@ -21,6 +25,13 @@ function Sidebar({ toggle, select, isOpen }) {
 
     function incrementIndex() {
         setIndex(index + 1);
+    }
+
+    // Resolve the folder name from its path
+    function folderName(folder) {
+        if (folder === "INBOX") return "Inbox";
+        else if (folder.startsWith("[Gmail]/")) return folder.substring(8);
+        else return folder;
     }
 
     // This is for the leftmost sidebar, containing the inboxes and also the button to toggle the sidebar opening
@@ -35,7 +46,7 @@ function Sidebar({ toggle, select, isOpen }) {
                 <div className="flex flex-col flex-grow">
                     <div className="flex flex-col mt-4">
                         {folders.map((folder) => (
-                            <h1 className="text-l pl-4 font-bold text-white transition-all cursor-pointer" onClick={() => selectFolder(folder)}>{isOpen ? folder : ''}</h1>
+                            <h1 className="text-l pl-4 font-bold text-white transition-all cursor-pointer" onClick={() => selectFolder(folder.folder)}>{isOpen ? folder.name : ''}</h1>
                         ))}
                     </div>
                 </div>
